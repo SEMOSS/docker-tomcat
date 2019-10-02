@@ -2,7 +2,8 @@ FROM debian:9.6
 
 LABEL maintainer="semoss@semoss.org"
 
-ENV PATH=$PATH:/opt/apache-maven-3.5.4/bin:/opt/apache-tomcat-8.0.41/bin
+ENV TOMCAT_HOME=/opt/apache-tomcat-8.0.41
+ENV PATH=$PATH:/opt/apache-maven-3.5.4/bin:$TOMCAT_HOME/bin
 
 # Install the following:
 # Java
