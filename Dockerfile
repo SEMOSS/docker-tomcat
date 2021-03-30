@@ -27,6 +27,7 @@ RUN sudo apt-get update \
 	&& sudo apt-get -y install openjdk-8-jdk \
 	&& java -version \
 	&& sudo apt-get -y install wget \
+	&& sudo apt-get -y install procps \
 	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.26/bin/apache-tomcat-9.0.26.tar.gz \
 	&& tar -zxvf apache-tomcat-*.tar.gz \
 	#&& mkdir $TOMCAT_HOME \
