@@ -17,6 +17,7 @@ RUN apt-get update \
 	&& apt-get -y install openjdk-8-jdk \
 	&& java -version \
 	&& apt-get -y install wget \
+	&& apt-get -y install procps \
 	&& wget https://archive.apache.org/dist/tomcat/tomcat-8/v8.0.41/bin/apache-tomcat-8.0.41.tar.gz \
 	&& tar -zxvf apache-tomcat-*.tar.gz \
 	&& mkdir /opt/apache-tomcat-8.0.41 \
