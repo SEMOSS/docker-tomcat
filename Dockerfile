@@ -10,7 +10,7 @@ LABEL maintainer="semoss@semoss.org"
 
 ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.62
 ENV JAVA_HOME=/usr/lib/jvm/zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64
-ENV PATH=$PATH:/opt/apache-maven-3.5.4/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
+ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 
 # Install the following:
 # Java - zulu https://cdn.azul.com/zulu/bin/zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64.tar.gz 
@@ -47,12 +47,12 @@ RUN apt-get update \
 	&& cp docker-tomcat/server.xml $TOMCAT_HOME/conf/server.xml \
 	&& rm -r docker-tomcat \
 	&& echo 'CATALINA_PID="$CATALINA_BASE/bin/catalina.pid"' > $TOMCAT_HOME/bin/setenv.sh \
-	&& wget https://archive.apache.org/dist/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz\
+	&& wget https://archive.apache.org/dist/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz\
 	&& tar -zxvf apache-maven-*.tar.gz \
-	&& mkdir /opt/apache-maven-3.5.4 \
-	&& mv apache-maven-3.5.4/* /opt/apache-maven-3.5.4/ \
-	&& rm -r apache-maven-3.5.4 \
-	&& rm apache-maven-3.5.4-bin.tar.gz \
+	&& mkdir /opt/apache-maven-3.8.5 \
+	&& mv apache-maven-3.8.5/* /opt/apache-maven-3.8.5/ \
+	&& rm -r apache-maven-3.8.5 \
+	&& rm apache-maven-3.8.5-bin.tar.gz \
 	&& apt-get -y install nano \
 	&& echo '#!/bin/sh' > $TOMCAT_HOME/bin/start.sh \
 	&& echo 'catalina.sh start' >> $TOMCAT_HOME/bin/start.sh \
@@ -60,7 +60,7 @@ RUN apt-get update \
 	&& echo '#!/bin/sh' > $TOMCAT_HOME/bin/stop.sh \
 	&& echo 'shutdown.sh -force' >> $TOMCAT_HOME/bin/stop.sh \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
-	&& chmod 777 /opt/apache-maven-3.5.4/bin/*.cmd \
+	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd \
 	&& apt-get clean all
 
 WORKDIR $TOMCAT_HOME/webapps
