@@ -9,7 +9,7 @@ FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
 LABEL maintainer="semoss@semoss.org"
 
 ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.63
-ENV JAVA_HOME=/usr/lib/jvm/zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64
+ENV JAVA_HOME=/usr/lib/jvm/zulu8
 ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 
 # Install the following:
@@ -23,15 +23,13 @@ RUN apt-get update \
 	&& apt-get -y install apt-transport-https ca-certificates wget dirmngr gnupg software-properties-common \
 	&& apt-get update \
 	&& cd ~/ \
-	&& apt-get -y install wget \
-	&& apt-get -y install procps \
-	&& mkdir /usr/lib/jvm \
-	&& cd /usr/lib/jvm \
-	&& wget https://cdn.azul.com/zulu/bin/zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64.tar.gz \
-	&& tar -xvf zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64.tar.gz \
-	&& rm -rf zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64.tar.gz \
+	&& apt-get -y install wget procps git libopenblas-base\
+	&& mkdir -p $JAVA_HOME \
+	&& git config --global http.sslverify false \
+	&& git clone https://github.com/SEMOSS/docker-tomcat \
+	&& chmod +x docker-tomcat/install_java.sh \
+	&& /bin/bash docker-tomcat/install_java.sh \
 	&& java -version \
-	&& apt-get -y install libopenblas-base \
 	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.63/bin/apache-tomcat-9.0.63.tar.gz \
 	&& tar -zxvf apache-tomcat-9.0.63.tar.gz \
 	&& mkdir $TOMCAT_HOME \
@@ -40,9 +38,6 @@ RUN apt-get update \
 	&& rm apache-tomcat-9.0.63.tar.gz \
 	&& rm $TOMCAT_HOME/conf/server.xml \
 	&& rm $TOMCAT_HOME/conf/web.xml \
-	&& apt-get -y install git \
-	&& git config --global http.sslverify false \
-	&& git clone https://github.com/SEMOSS/docker-tomcat \
 	&& cp docker-tomcat/web.xml $TOMCAT_HOME/conf/web.xml \
 	&& cp docker-tomcat/server.xml $TOMCAT_HOME/conf/server.xml \
 	&& rm -r docker-tomcat \
