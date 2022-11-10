@@ -27,8 +27,10 @@ RUN apt-get update \
 	&& mkdir -p $JAVA_HOME \
 	&& git config --global http.sslverify false \
 	&& git clone https://github.com/SEMOSS/docker-tomcat \
-	&& chmod +x docker-tomcat/install_java.sh \
-	&& /bin/bash docker-tomcat/install_java.sh \
+	&& cd docker-tomcat \
+	&& git checkout debian11 \
+	&& chmod +x install_java.sh \
+	&& /bin/bash install_java.sh \
 	&& java -version \
 	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.63/bin/apache-tomcat-9.0.63.tar.gz \
 	&& tar -zxvf apache-tomcat-9.0.63.tar.gz \
@@ -38,8 +40,9 @@ RUN apt-get update \
 	&& rm apache-tomcat-9.0.63.tar.gz \
 	&& rm $TOMCAT_HOME/conf/server.xml \
 	&& rm $TOMCAT_HOME/conf/web.xml \
-	&& cp docker-tomcat/web.xml $TOMCAT_HOME/conf/web.xml \
-	&& cp docker-tomcat/server.xml $TOMCAT_HOME/conf/server.xml \
+	&& cp web.xml $TOMCAT_HOME/conf/web.xml \
+	&& cp server.xml $TOMCAT_HOME/conf/server.xml \
+	&& cd .. \
 	&& rm -r docker-tomcat \
 	&& echo 'CATALINA_PID="$CATALINA_BASE/bin/catalina.pid"' > $TOMCAT_HOME/bin/setenv.sh \
 	&& wget https://archive.apache.org/dist/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz\
