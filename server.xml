@@ -167,6 +167,15 @@
 				pattern="ip=%h timestamp=%{yyyy-MM-dd'T'HH:mm:ss.SSSZ}t session=%{monolith}c userid=%{log_semoss_user_id}s request=&quot;%r&quot; status=%s requestTime=%D bytesSent=%b" 
 				prefix="access_log" 
 				suffix=".txt"/>
+	 
+	 <!--
+	 <Valve className="org.apache.catalina.valves.ErrorReportValve"
+				errorCode.404="webapps/Monolith/error/404error.html"
+				errorCode.0="webapps/Monolith/error/error.html"
+				showReport="false"
+				showServerInfo="false" />
+	 -->
+	      
       </Host>
     </Engine>
   </Service>
