@@ -1,8 +1,8 @@
-#docker build . -t quay.io/semoss/docker-tomcat:debian11
+#docker build . -t quay.io/semoss/docker-tomcat:cuda12
 
 ARG BASE_REGISTRY=docker.io
-ARG BASE_IMAGE=debian
-ARG BASE_TAG=11
+ARG BASE_IMAGE=nvidia/cuda	
+ARG BASE_TAG=12.1.0-devel-ubuntu22.04
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
 
@@ -28,7 +28,7 @@ RUN apt-get update \
 	&& git config --global http.sslverify false \
 	&& git clone https://github.com/SEMOSS/docker-tomcat \
 	&& cd docker-tomcat \
-	&& git checkout debian11 \
+	&& git checkout cuda12 \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
