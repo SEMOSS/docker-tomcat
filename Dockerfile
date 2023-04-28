@@ -42,8 +42,6 @@ RUN apt-get update \
 	&& rm $TOMCAT_HOME/conf/web.xml \
 	&& cp web.xml $TOMCAT_HOME/conf/web.xml \
 	&& cp server.xml $TOMCAT_HOME/conf/server.xml \
-	&& chmod +x config.sh \
-	&& /bin/bash config.sh \
 	&& cd .. \
 	&& rm -r docker-tomcat \
 	&& echo 'CATALINA_PID="$CATALINA_BASE/bin/catalina.pid"' > $TOMCAT_HOME/bin/setenv.sh \
@@ -61,6 +59,8 @@ RUN apt-get update \
 	&& echo 'shutdown.sh -force' >> $TOMCAT_HOME/bin/stop.sh \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
 	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd \
+	&& chmod +x config.sh \
+	&& /bin/bash config.sh \
 	&& apt-get clean all
 
 WORKDIR $TOMCAT_HOME/webapps
