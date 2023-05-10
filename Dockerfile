@@ -42,8 +42,8 @@ RUN apt-get update \
 	&& rm $TOMCAT_HOME/conf/web.xml \
 	&& cp web.xml $TOMCAT_HOME/conf/web.xml \
 	&& cp server.xml $TOMCAT_HOME/conf/server.xml \
-	&& chmod +x docker-tomcat/config.sh \
-	&& /bin/bash docker-tomcat/config.sh \
+	&& chmod +x config.sh \
+	&& /bin/bash config.sh \
 	&& cd .. \
 	&& rm -r docker-tomcat \
 	&& echo 'CATALINA_PID="$CATALINA_BASE/bin/catalina.pid"' > $TOMCAT_HOME/bin/setenv.sh \
