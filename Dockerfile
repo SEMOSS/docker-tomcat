@@ -59,8 +59,8 @@ RUN apt-get update \
 	&& echo 'shutdown.sh -force' >> $TOMCAT_HOME/bin/stop.sh \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
 	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd \
-	&& chmod +x config.sh \
-	&& /bin/bash config.sh \
+	&& chmod +x docker-tomcat/config.sh \
+	&& /bin/bash docker-tomcat/config.sh \
 	&& apt-get clean all
 
 WORKDIR $TOMCAT_HOME/webapps
