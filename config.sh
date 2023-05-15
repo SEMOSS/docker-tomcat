@@ -1,7 +1,8 @@
 os=$(uname)
 if [[ $os == *Windows* ]] || [[ $os == Darwin ]]; then
-    echo "Case insensitive filesystem, context.xml wont be configured"
+    echo "Updating no link context.xml"
+    cp context-no-link.xml $TOMCAT_HOME/conf/context.xml
 else
-    echo "Updating context.xml"
-    cp context.xml $TOMCAT_HOME/conf/context.xml
+    echo "Updating with link context.xml"
+    cp context-with-link.xml $TOMCAT_HOME/conf/context.xml
 fi
