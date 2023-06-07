@@ -8,7 +8,7 @@ FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
 
 LABEL maintainer="semoss@semoss.org"
 
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.73
+ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.75
 ENV JAVA_HOME=/usr/lib/jvm/zulu8
 ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 
@@ -32,12 +32,12 @@ RUN apt-get update \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
-	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.73/bin/apache-tomcat-9.0.73.tar.gz \
-	&& tar -zxvf apache-tomcat-9.0.73.tar.gz \
+	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.75/bin/apache-tomcat-9.0.75.tar.gz \
+	&& tar -zxvf apache-tomcat-9.0.75.tar.gz \
 	&& mkdir $TOMCAT_HOME \
-	&& mv apache-tomcat-9.0.73/* $TOMCAT_HOME/ \
-	&& rm -r apache-tomcat-9.0.73 \
-	&& rm apache-tomcat-9.0.73.tar.gz \
+	&& mv apache-tomcat-9.0.75/* $TOMCAT_HOME/ \
+	&& rm -r apache-tomcat-9.0.75 \
+	&& rm apache-tomcat-9.0.75.tar.gz \
 	&& rm $TOMCAT_HOME/conf/server.xml \
 	&& rm $TOMCAT_HOME/conf/web.xml \
 	&& cp web.xml $TOMCAT_HOME/conf/web.xml \
@@ -56,7 +56,7 @@ RUN apt-get update \
 	&& apt-get -y install nano \
 	&& echo '#!/bin/sh' > $TOMCAT_HOME/bin/start.sh \
 	&& echo 'catalina.sh start' >> $TOMCAT_HOME/bin/start.sh \
-	&& echo 'tail -f /opt/apache-tomcat-9.0.73/logs/catalina.out' >> $TOMCAT_HOME/bin/start.sh \
+	&& echo 'tail -f /opt/apache-tomcat-9.0.75/logs/catalina.out' >> $TOMCAT_HOME/bin/start.sh \
 	&& echo '#!/bin/sh' > $TOMCAT_HOME/bin/stop.sh \
 	&& echo 'shutdown.sh -force' >> $TOMCAT_HOME/bin/stop.sh \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
