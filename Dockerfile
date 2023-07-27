@@ -32,7 +32,7 @@ RUN apt-get update \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
-	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.75/bin/apache-tomcat-9.0.78.tar.gz \
+	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.78/bin/apache-tomcat-9.0.78.tar.gz \
 	&& tar -zxvf apache-tomcat-9.0.78.tar.gz \
 	&& mkdir $TOMCAT_HOME \
 	&& mv apache-tomcat-9.0.78/* $TOMCAT_HOME/ \
