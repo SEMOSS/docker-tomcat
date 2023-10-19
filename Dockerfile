@@ -1,14 +1,14 @@
-#docker build . -t quay.io/semoss/docker-tomcat:debian11
+#docker build . -t quay.io/semoss/docker-tomcat:ubi8.8
 
-ARG BASE_REGISTRY=docker.io
-ARG BASE_IMAGE=debian
-ARG BASE_TAG=11
+ARG BASE_REGISTRY=registry.access.redhat.com
+ARG BASE_IMAGE=ubi8/ubi
+ARG BASE_TAG=8.8
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
 
 LABEL maintainer="semoss@semoss.org"
 
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.81
+ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.82
 ENV JAVA_HOME=/usr/lib/jvm/zulu8
 ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 
@@ -19,25 +19,23 @@ ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 # Maven
 # Git
 # Nano
-RUN apt-get update \
-	&& apt-get -y install apt-transport-https ca-certificates wget dirmngr gnupg software-properties-common \
-	&& apt-get update \
+RUN yum -y update \
+	&& yum -y install curl ca-certificates wget dirmngr gnupg git procps openblas nano \
 	&& cd ~/ \
-	&& apt-get -y install wget procps git libopenblas-base\
 	&& mkdir -p $JAVA_HOME \
 	&& git config --global http.sslverify false \
 	&& git clone https://github.com/SEMOSS/docker-tomcat \
 	&& cd docker-tomcat \
-	&& git checkout debian11 \
+	&& git checkout ubi8 \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
-	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.81/bin/apache-tomcat-9.0.81.tar.gz \
-	&& tar -zxvf apache-tomcat-9.0.81.tar.gz \
+	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.82/bin/apache-tomcat-9.0.82.tar.gz \
+	&& tar -zxvf apache-tomcat-9.0.*.tar.gz \
 	&& mkdir $TOMCAT_HOME \
-	&& mv apache-tomcat-9.0.81/* $TOMCAT_HOME/ \
-	&& rm -r apache-tomcat-9.0.81 \
-	&& rm apache-tomcat-9.0.81.tar.gz \
+	&& mv apache-tomcat-9.0.*/* $TOMCAT_HOME/ \
+	&& rm -r apache-tomcat-9.0.* \
+	&& rm apache-tomcat-9.0.*.tar.gz \
 	&& rm $TOMCAT_HOME/conf/server.xml \
 	&& rm $TOMCAT_HOME/conf/web.xml \
 	&& cp web.xml $TOMCAT_HOME/conf/web.xml \
@@ -56,13 +54,12 @@ RUN apt-get update \
 	&& apt-get -y install nano \
 	&& echo '#!/bin/sh' > $TOMCAT_HOME/bin/start.sh \
 	&& echo 'catalina.sh start' >> $TOMCAT_HOME/bin/start.sh \
-	&& echo 'tail -f /opt/apache-tomcat-9.0.81/logs/catalina.out' >> $TOMCAT_HOME/bin/start.sh \
+	&& echo 'tail -f /opt/apache-tomcat-9.0.82/logs/catalina.out' >> $TOMCAT_HOME/bin/start.sh \
 	&& echo '#!/bin/sh' > $TOMCAT_HOME/bin/stop.sh \
 	&& echo 'shutdown.sh -force' >> $TOMCAT_HOME/bin/stop.sh \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
-	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd \
-	&& apt-get clean all
-
+	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd
+	
 WORKDIR $TOMCAT_HOME/webapps
 
 CMD ["start.sh"]
