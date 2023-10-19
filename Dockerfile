@@ -34,7 +34,7 @@ RUN yum -y update \
 	&& tar -zxvf apache-tomcat-9.0.*.tar.gz \
 	&& mkdir $TOMCAT_HOME \
 	&& mv apache-tomcat-9.0.*/* $TOMCAT_HOME/ \
-	&& rm -r apache-tomcat-9.0.* \
+	&& rm -r apache-tomcat-9.0.*/ \
 	&& rm apache-tomcat-9.0.*.tar.gz \
 	&& rm $TOMCAT_HOME/conf/server.xml \
 	&& rm $TOMCAT_HOME/conf/web.xml \
@@ -51,7 +51,6 @@ RUN yum -y update \
 	&& mv apache-maven-3.8.5/* /opt/apache-maven-3.8.5/ \
 	&& rm -r apache-maven-3.8.5 \
 	&& rm apache-maven-3.8.5-bin.tar.gz \
-	&& apt-get -y install nano \
 	&& echo '#!/bin/sh' > $TOMCAT_HOME/bin/start.sh \
 	&& echo 'catalina.sh start' >> $TOMCAT_HOME/bin/start.sh \
 	&& echo 'tail -f /opt/apache-tomcat-9.0.82/logs/catalina.out' >> $TOMCAT_HOME/bin/start.sh \
