@@ -53,7 +53,7 @@ RUN yum -y update \
 	&& rm apache-maven-3.8.5-bin.tar.gz \
 	&& echo '#!/bin/sh' > $TOMCAT_HOME/bin/start.sh \
 	&& echo 'catalina.sh start' >> $TOMCAT_HOME/bin/start.sh \
-	&& echo "tail -f %TOMCAT_HOME/logs/catalina.out" >> $TOMCAT_HOME/bin/start.sh \
+	&& echo "tail -f $TOMCAT_HOME/logs/catalina.out" >> $TOMCAT_HOME/bin/start.sh \
 	&& echo '#!/bin/sh' > $TOMCAT_HOME/bin/stop.sh \
 	&& echo 'shutdown.sh -force' >> $TOMCAT_HOME/bin/stop.sh \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
