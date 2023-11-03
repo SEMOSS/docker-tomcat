@@ -2,7 +2,7 @@
 
 ARG BASE_REGISTRY=docker.io
 ARG BASE_IMAGE=nvidia/cuda	
-ARG BASE_TAG=12.1.0-devel-ubuntu22.04
+ARG BASE_TAG=12.2.2-devel-ubuntu22.04
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
 
