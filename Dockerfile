@@ -62,10 +62,13 @@ RUN apt-get update \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
 	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd \
 	&& pip3 install jep==3.9.1 \
+	&& R CMD javareconf \
 	&& apt-get clean all
 
-RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)"
-
+RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)" && \
+	wget https://www.rforge.net/Rserve/snapshot/Rserve_1.8-11.tar.gz \
+	&& R CMD INSTALL Rserve_1.8-11.tar.gz && \
+	rm Rserve_1.8-11.tar.gz
 WORKDIR $TOMCAT_HOME/webapps
 
 CMD ["start.sh"]
