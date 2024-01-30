@@ -1,8 +1,8 @@
 #docker build . -t quay.io/semoss/docker-tomcat:debian11
 
-ARG BASE_REGISTRY=docker.io
-ARG BASE_IMAGE=debian
-ARG BASE_TAG=11
+ARG BASE_REGISTRY=docker.cfg.deloitte.com
+ARG BASE_IMAGE=ashok/docker-r-python
+ARG BASE_TAG=debian11
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
 
@@ -20,10 +20,10 @@ ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 # Git
 # Nano
 RUN apt-get update \
-	&& apt-get -y install apt-transport-https ca-certificates wget dirmngr gnupg software-properties-common \
+	&& apt-get -y install apt-transport-https ca-certificates git wget dirmngr gnupg software-properties-common \
 	&& apt-get update \
 	&& cd ~/ \
-	&& apt-get -y install wget procps git libopenblas-base\
+	&& apt-get -y install wget procps libopenblas-base\
 	&& mkdir -p $JAVA_HOME \
 	&& git config --global http.sslverify false \
 	&& git clone https://github.com/SEMOSS/docker-tomcat \
@@ -61,7 +61,10 @@ RUN apt-get update \
 	&& echo 'shutdown.sh -force' >> $TOMCAT_HOME/bin/stop.sh \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
 	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd \
+	&& pip3 install jep==3.9.1 \
 	&& apt-get clean all
+
+RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)"
 
 WORKDIR $TOMCAT_HOME/webapps
 
