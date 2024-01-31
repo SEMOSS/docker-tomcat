@@ -11,7 +11,8 @@ LABEL maintainer="semoss@semoss.org"
 ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.85
 ENV JAVA_HOME=/usr/lib/jvm/zulu8
 ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
-
+# Needed for JEP
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
 # Install the following:
 # Java - zulu https://cdn.azul.com/zulu/bin/zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64.tar.gz 
 # Tomcat
