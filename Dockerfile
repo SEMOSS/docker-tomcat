@@ -1,8 +1,8 @@
 #docker build . -t quay.io/semoss/docker-tomcat:ubi8.8
 
-ARG BASE_REGISTRY=registry.access.redhat.com
-ARG BASE_IMAGE=ubi8/ubi
-ARG BASE_TAG=8.8
+ARG BASE_REGISTRY=docker.cfg.deloitte.com
+ARG BASE_IMAGE=ashok/docker-r-python
+ARG BASE_TAG=ubi8-r
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
 
@@ -11,6 +11,8 @@ LABEL maintainer="semoss@semoss.org"
 ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.85
 ENV JAVA_HOME=/usr/lib/jvm/zulu8
 ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
+# Needed for JEP
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
 
 # Install the following:
 # Java - zulu https://cdn.azul.com/zulu/bin/zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64.tar.gz 
@@ -19,8 +21,8 @@ ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 # Maven
 # Git
 # Nano
-RUN yum -y update \
-	&& yum -y install curl ca-certificates wget dirmngr gnupg git procps openblas nano \
+RUN yum -y update --exclude=poppler* \
+	&& yum -y install curl ca-certificates dirmngr gnupg procps openblas nano \
 	&& cd ~/ \
 	&& mkdir -p $JAVA_HOME \
 	&& git config --global http.sslverify false \
@@ -57,8 +59,15 @@ RUN yum -y update \
 	&& echo '#!/bin/sh' > $TOMCAT_HOME/bin/stop.sh \
 	&& echo 'shutdown.sh -force' >> $TOMCAT_HOME/bin/stop.sh \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
-	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd
-	
+	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd \
+	&& pip3 install jep==3.9.1 \
+	&& R CMD javareconf
+
+RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)" && \
+	wget https://www.rforge.net/Rserve/snapshot/Rserve_1.8-11.tar.gz \
+	&& R CMD INSTALL Rserve_1.8-11.tar.gz && \
+	rm Rserve_1.8-11.tar.gz
+
 WORKDIR $TOMCAT_HOME/webapps
 
 CMD ["start.sh"]
