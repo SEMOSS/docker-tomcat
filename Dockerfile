@@ -1,8 +1,8 @@
 #docker build . -t quay.io/semoss/docker-tomcat:cuda12
 
-ARG BASE_REGISTRY=docker.io
-ARG BASE_IMAGE=nvidia/cuda	
-ARG BASE_TAG=12.2.2-devel-ubuntu22.04
+ARG BASE_REGISTRY=docker.cfg.deloitte.com
+ARG BASE_IMAGE=ashok/docker-r-python
+ARG BASE_TAG=cuda12
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
 
@@ -11,6 +11,8 @@ LABEL maintainer="semoss@semoss.org"
 ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.83
 ENV JAVA_HOME=/usr/lib/jvm/zulu8
 ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
+# Needed for JEP
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
 
 # Install the following:
 # Java - zulu https://cdn.azul.com/zulu/bin/zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64.tar.gz 
@@ -20,10 +22,10 @@ ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 # Git
 # Nano
 RUN apt-get update \
-	&& apt-get -y install apt-transport-https ca-certificates wget dirmngr gnupg software-properties-common \
+	&& apt-get -y install apt-transport-https git ca-certificates dirmngr gnupg software-properties-common \
 	&& apt-get update \
 	&& cd ~/ \
-	&& apt-get -y install wget procps git libopenblas-base\
+	&& apt-get -y install wget procps libopenblas-base\
 	&& mkdir -p $JAVA_HOME \
 	&& git config --global http.sslverify false \
 	&& git clone https://github.com/SEMOSS/docker-tomcat \
@@ -59,7 +61,14 @@ RUN apt-get update \
 	&& echo 'shutdown.sh -force' >> $TOMCAT_HOME/bin/stop.sh \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
 	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd \
+	&& pip3 install jep==3.9.1 \
+	&& R CMD javareconf \
 	&& apt-get clean all
+
+RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)" && \
+	wget https://www.rforge.net/Rserve/snapshot/Rserve_1.8-11.tar.gz \
+	&& R CMD INSTALL Rserve_1.8-11.tar.gz && \
+	rm Rserve_1.8-11.tar.gz
 
 WORKDIR $TOMCAT_HOME/webapps
 
