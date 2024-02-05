@@ -1,7 +1,7 @@
 #docker build . -t quay.io/semoss/docker-tomcat:ubi8.8
 
-ARG BASE_REGISTRY=docker.cfg.deloitte.com
-ARG BASE_IMAGE=ashok/docker-r-python
+ARG BASE_REGISTRY=quay.io
+ARG BASE_IMAGE=semoss/docker-r-python
 ARG BASE_TAG=ubi8-r
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
