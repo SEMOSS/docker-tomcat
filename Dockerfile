@@ -1,7 +1,7 @@
 #docker build . -t quay.io/semoss/docker-tomcat:debian11
 
-ARG BASE_REGISTRY=docker.cfg.deloitte.com
-ARG BASE_IMAGE=ashok/docker-r-python
+ARG BASE_REGISTRY=quay.io
+ARG BASE_IMAGE=semoss/docker-r-python
 ARG BASE_TAG=debian11
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
