@@ -24,13 +24,12 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
 # Nano
 
 RUN yum -y update --exclude=poppler* \
-	&& yum -y install curl ca-certificates git dirmngr gnupg procps openblas nano \
-	&& cd ~/ \
-	&& mkdir -p $JAVA_HOME \
-	&& git config --global http.sslverify false \
-	&& git clone https://github.com/SEMOSS/docker-tomcat \
-	&& cd docker-tomcat \
-	&& git checkout ubi8 \
+	&& yum -y install curl ca-certificates dirmngr gnupg procps openblas nano \
+	&& mkdir -p $JAVA_HOME
+
+COPY . /root/
+
+RUN cd ~/ \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
@@ -46,8 +45,6 @@ RUN yum -y update --exclude=poppler* \
 	&& cp server.xml $TOMCAT_HOME/conf/server.xml \
 	&& chmod +x config.sh \
 	&& /bin/bash config.sh \
-	&& cd .. \
-	&& rm -r docker-tomcat \
 	&& echo 'CATALINA_PID="$CATALINA_BASE/bin/catalina.pid"' > $TOMCAT_HOME/bin/setenv.sh \
 	&& wget https://archive.apache.org/dist/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz\
 	&& tar -zxvf apache-maven-*.tar.gz \
