@@ -1,4 +1,4 @@
-#docker build . -t quay.io/semoss/docker-tomcat:debian11
+#docker build . -t quay.io/semoss/docker-tomcat:debian11-1
 
 ARG BASE_REGISTRY=quay.io
 ARG BASE_IMAGE=semoss/docker-r-python
@@ -20,16 +20,14 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
 # Maven
 # Git
 # Nano
+COPY . /root/
+
 RUN apt-get update \
 	&& apt-get -y install apt-transport-https ca-certificates git wget dirmngr gnupg software-properties-common \
 	&& apt-get update \
 	&& cd ~/ \
 	&& apt-get -y install wget procps libopenblas-base\
 	&& mkdir -p $JAVA_HOME \
-	&& git config --global http.sslverify false \
-	&& git clone https://github.com/SEMOSS/docker-tomcat \
-	&& cd docker-tomcat \
-	&& git checkout debian11 \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
@@ -45,8 +43,6 @@ RUN apt-get update \
 	&& cp server.xml $TOMCAT_HOME/conf/server.xml \
 	&& chmod +x config.sh \
 	&& /bin/bash config.sh \
-	&& cd .. \
-	&& rm -r docker-tomcat \
 	&& echo 'CATALINA_PID="$CATALINA_BASE/bin/catalina.pid"' > $TOMCAT_HOME/bin/setenv.sh \
 	&& wget https://archive.apache.org/dist/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz\
 	&& tar -zxvf apache-maven-*.tar.gz \
