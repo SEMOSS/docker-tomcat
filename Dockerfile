@@ -1,8 +1,8 @@
-#docker build . -t quay.io/semoss/docker-tomcat:cuda12
+#docker build . -t quay.io/semoss/docker-tomcat:cuda12.2
 
-ARG BASE_REGISTRY=docker.cfg.deloitte.com
-ARG BASE_IMAGE=ashok/docker-r-python
-ARG BASE_TAG=cuda12
+ARG BASE_REGISTRY=quay.io
+ARG BASE_IMAGE=semoss/docker-r-python
+ARG BASE_TAG=cuda12.2
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
 
@@ -21,16 +21,13 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
 # Maven
 # Git
 # Nano
+COPY . /root/
 RUN apt-get update \
 	&& apt-get -y install apt-transport-https git ca-certificates dirmngr gnupg software-properties-common \
 	&& apt-get update \
 	&& cd ~/ \
 	&& apt-get -y install wget procps libopenblas-base\
 	&& mkdir -p $JAVA_HOME \
-	&& git config --global http.sslverify false \
-	&& git clone https://github.com/SEMOSS/docker-tomcat \
-	&& cd docker-tomcat \
-	&& git checkout cuda12 \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
@@ -44,8 +41,6 @@ RUN apt-get update \
 	&& rm $TOMCAT_HOME/conf/web.xml \
 	&& cp web.xml $TOMCAT_HOME/conf/web.xml \
 	&& cp server.xml $TOMCAT_HOME/conf/server.xml \
-	&& cd .. \
-	&& rm -r docker-tomcat \
 	&& echo 'CATALINA_PID="$CATALINA_BASE/bin/catalina.pid"' > $TOMCAT_HOME/bin/setenv.sh \
 	&& wget https://archive.apache.org/dist/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz\
 	&& tar -zxvf apache-maven-*.tar.gz \
