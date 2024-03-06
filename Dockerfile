@@ -2,26 +2,19 @@
 
 ARG BASE_REGISTRY=quay.io
 ARG BASE_IMAGE=semoss/docker-r-python
-ARG BASE_TAG=ubi8-rhel
+ARG BASE_TAG=ubi8-rhel-squashed
 
-FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
+FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as builder
 
 LABEL maintainer="semoss@semoss.org"
 
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.85
 ENV JAVA_HOME=/usr/lib/jvm/zulu8
-ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
-
-# Needed for JEP
+ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.85
+ENV MAVEN_HOME=/opt/apache-maven-3.8.5
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
+ENV PATH=$PATH:${MAVEN_HOME}/bin:${TOMCAT_HOME}/bin:${JAVA_HOME}/bin
 
-# Install the following:
-# Java - zulu https://cdn.azul.com/zulu/bin/zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64.tar.gz 
-# Tomcat
-# Wget
-# Maven
-# Git
-# Nano
+RUN printenv | grep -E '^(JAVA_HOME|TOMCAT_HOME|MAVEN_HOME|LD_LIBRARY_PATH|PATH)=' | awk '{print "export " $0}' >> /opt/set_env.env
 
 RUN yum -y update --exclude=poppler* \
 	&& yum -y install curl ca-certificates dirmngr gnupg procps openblas nano \
@@ -67,6 +60,15 @@ RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)" && \
 	&& R CMD INSTALL Rserve_1.8-11.tar.gz && \
 	rm Rserve_1.8-11.tar.gz
 
+FROM scratch AS final
+
+ENV JAVA_HOME=/usr/lib/jvm/zulu8
+ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.85
+ENV MAVEN_HOME=/opt/apache-maven-3.8.5
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
+ENV PATH=$PATH:${MAVEN_HOME}/bin:${TOMCAT_HOME}/bin:${JAVA_HOME}/bin
+
+COPY --from=builder / /
 WORKDIR $TOMCAT_HOME/webapps
 
 CMD ["start.sh"]
