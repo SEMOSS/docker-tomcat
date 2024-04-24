@@ -9,7 +9,7 @@ FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as builder
 LABEL maintainer="semoss@semoss.org"
 
 ENV JAVA_HOME=/usr/lib/jvm/zulu8
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.85
+ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.88
 ENV MAVEN_HOME=/opt/apache-maven-3.8.5
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
 ENV PATH=$PATH:${MAVEN_HOME}/bin:${TOMCAT_HOME}/bin:${JAVA_HOME}/bin
@@ -26,7 +26,7 @@ RUN cd ~/ \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
-	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.85/bin/apache-tomcat-9.0.85.tar.gz \
+	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.88/bin/apache-tomcat-9.0.88.tar.gz \
 	&& tar -zxvf apache-tomcat-9.0.*.tar.gz \
 	&& mkdir $TOMCAT_HOME \
 	&& mv apache-tomcat-9.0.*/* $TOMCAT_HOME/ \
@@ -63,7 +63,7 @@ RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)" && \
 FROM scratch AS final
 
 ENV JAVA_HOME=/usr/lib/jvm/zulu8
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.85
+ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.88
 ENV MAVEN_HOME=/opt/apache-maven-3.8.5
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
 ENV PATH=$PATH:${MAVEN_HOME}/bin:${TOMCAT_HOME}/bin:${JAVA_HOME}/bin
