@@ -4,15 +4,24 @@ ARG BASE_REGISTRY=quay.io
 ARG BASE_IMAGE=semoss/docker-r-python
 ARG BASE_TAG=cuda12.2
 
+ARG TOMCAT_HOME=/opt/apache-tomcat-9.0.85
+ARG JAVA_HOME=/usr/lib/jvm/zulu8
+ARG MAVEN_HOME=/opt/apache-maven-3.8.5
+ARG LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
+
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as builder
 
 LABEL maintainer="semoss@semoss.org"
 
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.85
-ENV JAVA_HOME=/usr/lib/jvm/zulu8
-ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
-# Needed for JEP
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
+ARG TOMCAT_HOME
+ARG JAVA_HOME
+ARG MAVEN_HOME
+ARG LD_LIBRARY_PATH
+
+ENV TOMCAT_HOME=$TOMCAT_HOME
+ENV JAVA_HOME=$JAVA_HOME
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+ENV PATH=$PATH:$MAVEN_HOME/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 
 RUN printenv | grep -E '^(JAVA_HOME|TOMCAT_HOME|MAVEN_HOME|LD_LIBRARY_PATH|PATH)=' | awk '{print "export " $0}' >> /opt/set_env.env
 
@@ -62,11 +71,16 @@ RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)" && \
 
 FROM scratch AS final
 
-ENV JAVA_HOME=/usr/lib/jvm/zulu8
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.85
-ENV MAVEN_HOME=/opt/apache-maven-3.8.5
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
-ENV PATH=$PATH:${MAVEN_HOME}/bin:${TOMCAT_HOME}/bin:${JAVA_HOME}/bin
+ARG TOMCAT_HOME
+ARG JAVA_HOME
+ARG MAVEN_HOME
+ARG LD_LIBRARY_PATH
+
+ENV TOMCAT_HOME=$TOMCAT_HOME
+ENV JAVA_HOME=$JAVA_HOME
+ENV PATH=$PATH:$MAVEN_HOME/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+ENV PATH=$PATH:$MAVEN_HOME/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 
 COPY --from=builder / /
 WORKDIR $TOMCAT_HOME/webapps
