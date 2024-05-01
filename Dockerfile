@@ -4,30 +4,40 @@ ARG BASE_REGISTRY=quay.io
 ARG BASE_IMAGE=semoss/docker-r-python
 ARG BASE_TAG=debian11
 
+ARG TOMCAT_HOME=/opt/apache-tomcat-9.0.88
+ARG JAVA_HOME=/usr/lib/jvm/zulu8
+ARG MAVEN_HOME=/opt/apache-maven-3.8.5
+ARG LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
+
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as builder
 
+ARG JAVA_HOME
+ARG TOMCAT_HOME
+ARG MAVEN_HOME
+ARG LD_LIBRARY_PATH
 LABEL maintainer="semoss@semoss.org"
 
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.85
-ENV JAVA_HOME=/usr/lib/jvm/zulu8
-ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
+ENV TOMCAT_HOME=$TOMCAT_HOME
+ENV JAVA_HOME=$JAVA_HOME
+ENV PATH=$PATH:$MAVEN_HOME/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 # Needed for JEP
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
 RUN printenv | grep -E '^(JAVA_HOME|TOMCAT_HOME|MAVEN_HOME|LD_LIBRARY_PATH|PATH)=' | awk '{print "export " $0}' >> /opt/set_env.env
 
 COPY . /root/
-
+RUN echo "print JAVA_HOME ${JAVA_HOME}"
 RUN apt-get update \
 	&& apt-get -y install apt-transport-https ca-certificates git wget dirmngr gnupg software-properties-common \
 	&& apt-get update \
 	&& cd ~/ \
 	&& apt-get -y install wget procps libopenblas-base\
+	&& echo "Creating directory for ${JAVA_HOME}.." \
 	&& mkdir -p $JAVA_HOME \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
-	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.85/bin/apache-tomcat-9.0.85.tar.gz \
+	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.88/bin/apache-tomcat-9.0.88.tar.gz \
 	&& tar -zxvf apache-tomcat-9.0.*.tar.gz \
 	&& mkdir $TOMCAT_HOME \
 	&& mv apache-tomcat-9.0.*/* $TOMCAT_HOME/ \
@@ -65,10 +75,16 @@ RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)" && \
 
 FROM scratch AS final
 
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.85
-ENV JAVA_HOME=/usr/lib/jvm/zulu8
-ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
+ARG JAVA_HOME
+ARG TOMCAT_HOME
+ARG MAVEN_HOME
+ARG LD_LIBRARY_PATH
+LABEL maintainer="semoss@semoss.org"
+
+ENV TOMCAT_HOME=$TOMCAT_HOME
+ENV JAVA_HOME=$JAVA_HOME
+ENV PATH=$PATH:$MAVEN_HOME/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 COPY --from=builder / /
 WORKDIR $TOMCAT_HOME/webapps
 
