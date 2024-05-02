@@ -26,7 +26,6 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 RUN printenv | grep -E '^(JAVA_HOME|TOMCAT_HOME|MAVEN_HOME|LD_LIBRARY_PATH|PATH)=' | awk '{print "export " $0}' >> /opt/set_env.env
 
 COPY . /root/
-RUN echo "print JAVA_HOME ${JAVA_HOME}"
 RUN apt-get update \
 	&& apt-get -y install apt-transport-https ca-certificates git wget dirmngr gnupg software-properties-common \
 	&& apt-get update \
