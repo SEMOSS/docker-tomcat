@@ -55,10 +55,13 @@ RUN cd ~/ \
 	&& pip3 install jep==3.9.1 \
 	&& R CMD javareconf
 
-RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)" && \
-	wget https://www.rforge.net/Rserve/snapshot/Rserve_1.8-11.tar.gz \
-	&& R CMD INSTALL Rserve_1.8-11.tar.gz && \
-	rm Rserve_1.8-11.tar.gz
+RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)" \
+	&& wget https://www.rforge.net/Rserve/snapshot/Rserve_1.8-11.tar.gz \
+	&& R CMD INSTALL Rserve_1.8-11.tar.gz \
+	&& rm Rserve_1.8-11.tar.gz
+
+RUN yum install grub \
+	&& fips-mode-setup --enable
 
 FROM scratch AS final
 
