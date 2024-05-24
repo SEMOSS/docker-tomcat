@@ -60,8 +60,7 @@ RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)" \
 	&& R CMD INSTALL Rserve_1.8-11.tar.gz \
 	&& rm Rserve_1.8-11.tar.gz
 
-RUN yum install grub \
-	&& fips-mode-setup --enable
+RUN fips-mode-setup --enable
 
 FROM scratch AS final
 
