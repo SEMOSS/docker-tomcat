@@ -1,8 +1,8 @@
-#docker build . -t quay.io/semoss/docker-tomcat:cuda12.2
+#docker build . -t quay.io/semoss/docker-tomcat:cuda12.5
 
 ARG BASE_REGISTRY=quay.io
 ARG BASE_IMAGE=semoss/docker-r-python
-ARG BASE_TAG=cuda12.2
+ARG BASE_TAG=cuda12.5
 
 ARG TOMCAT_HOME=/opt/apache-tomcat-9.0.85
 ARG JAVA_HOME=/usr/lib/jvm/zulu8
@@ -61,13 +61,7 @@ RUN apt-get update \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
 	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd \
 	&& pip3 install jep==3.9.1 \
-	&& R CMD javareconf \
 	&& apt-get clean all
-
-RUN R -e "install.packages(c('rJava', 'RJDBC'), dependencies=TRUE)" && \
-	wget https://www.rforge.net/Rserve/snapshot/Rserve_1.8-11.tar.gz \
-	&& R CMD INSTALL Rserve_1.8-11.tar.gz && \
-	rm Rserve_1.8-11.tar.gz
 
 FROM scratch AS final
 
