@@ -9,7 +9,7 @@ ARG JAVA_HOME=/usr/lib/jvm/zulu8
 ARG MAVEN_HOME=/opt/apache-maven-3.8.5
 ARG LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
 
-FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as builder
+FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} AS builder
 
 LABEL maintainer="semoss@semoss.org"
 
