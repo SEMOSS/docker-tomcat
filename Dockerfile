@@ -4,7 +4,7 @@ ARG BASE_REGISTRY=quay.io
 ARG BASE_IMAGE=semoss/docker-r-python
 ARG BASE_TAG=ubi8-rhel
 
-FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as builder
+FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} AS builder
 
 LABEL maintainer="semoss@semoss.org"
 
