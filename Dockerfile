@@ -1,34 +1,35 @@
-#docker build . -t quay.io/semoss/docker-tomcat:debian11
+#docker build . -t quay.io/semoss/docker-tomcat:debian11-1
 
-ARG BASE_REGISTRY=docker.io
-ARG BASE_IMAGE=debian
-ARG BASE_TAG=11
+ARG BASE_REGISTRY=quay.io
+ARG BASE_IMAGE=semoss/docker-r-python
+ARG BASE_TAG=debian12-ai
 
-FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
+ARG TOMCAT_HOME=/opt/apache-tomcat-9.0.88
+ARG JAVA_HOME=/usr/lib/jvm/zulu8
+ARG MAVEN_HOME=/opt/apache-maven-3.8.5
 
+FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as builder
+
+ARG JAVA_HOME
+ARG TOMCAT_HOME
+ARG MAVEN_HOME
 LABEL maintainer="semoss@semoss.org"
 
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.88
-ENV JAVA_HOME=/usr/lib/jvm/zulu8
-ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
+ENV TOMCAT_HOME=$TOMCAT_HOME
+ENV JAVA_HOME=$JAVA_HOME
+ENV PATH=$PATH:$MAVEN_HOME/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
+# Needed for JEP
 
-# Install the following:
-# Java - zulu https://cdn.azul.com/zulu/bin/zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64.tar.gz 
-# Tomcat
-# Wget
-# Maven
-# Git
-# Nano
+RUN printenv | grep -E '^(JAVA_HOME|TOMCAT_HOME|MAVEN_HOME|PATH)=' | awk '{print "export " $0}' >> /opt/set_env.env
+
+COPY . /root/
 RUN apt-get update \
-	&& apt-get -y install apt-transport-https ca-certificates wget dirmngr gnupg software-properties-common \
+	&& apt-get -y install apt-transport-https ca-certificates git wget dirmngr gnupg software-properties-common \
 	&& apt-get update \
 	&& cd ~/ \
-	&& apt-get -y install wget procps git libopenblas-base\
+	&& apt-get -y install wget procps git \
+	&& echo "Creating directory for ${JAVA_HOME}.." \
 	&& mkdir -p $JAVA_HOME \
-	&& git config --global http.sslverify false \
-	&& git clone https://github.com/SEMOSS/docker-tomcat \
-	&& cd docker-tomcat \
-	&& git checkout debian11 \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
@@ -44,8 +45,6 @@ RUN apt-get update \
 	&& cp server.xml $TOMCAT_HOME/conf/server.xml \
 	&& chmod +x config.sh \
 	&& /bin/bash config.sh \
-	&& cd .. \
-	&& rm -r docker-tomcat \
 	&& echo 'CATALINA_PID="$CATALINA_BASE/bin/catalina.pid"' > $TOMCAT_HOME/bin/setenv.sh \
 	&& wget https://archive.apache.org/dist/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz\
 	&& tar -zxvf apache-maven-*.tar.gz \
@@ -63,6 +62,17 @@ RUN apt-get update \
 	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd \
 	&& apt-get clean all
 
+FROM scratch AS final
+
+ARG JAVA_HOME
+ARG TOMCAT_HOME
+ARG MAVEN_HOME
+LABEL maintainer="semoss@semoss.org"
+
+ENV TOMCAT_HOME=$TOMCAT_HOME
+ENV JAVA_HOME=$JAVA_HOME
+ENV PATH=$PATH:$MAVEN_HOME/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
+COPY --from=builder / /
 WORKDIR $TOMCAT_HOME/webapps
 
 CMD ["start.sh"]
