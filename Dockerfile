@@ -1,8 +1,8 @@
-#docker build . -t quay.io/semoss/docker-tomcat:debian12-ai
+#docker build . -t quay.io/semoss/docker-tomcat:debian12-py
 
 ARG BASE_REGISTRY=quay.io
 ARG BASE_IMAGE=semoss/docker-r-python
-ARG BASE_TAG=debian12-ai
+ARG BASE_TAG=debian12-py
 
 ARG TOMCAT_HOME=/opt/apache-tomcat-9.0.88
 ARG JAVA_HOME=/usr/lib/jvm/zulu8
