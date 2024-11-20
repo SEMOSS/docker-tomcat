@@ -16,8 +16,10 @@ ENV PATH=$PATH:${MAVEN_HOME}/bin:${TOMCAT_HOME}/bin:${JAVA_HOME}/bin
 
 RUN printenv | grep -E '^(JAVA_HOME|TOMCAT_HOME|MAVEN_HOME|LD_LIBRARY_PATH|PATH)=' | awk '{print "export " $0}' >> /opt/set_env.env
 
-RUN yum -y update --exclude=poppler* \
-	&& yum -y install curl ca-certificates dirmngr gnupg procps openblas nano
+# RUN yum -y update --exclude=poppler* \
+# 	&& yum -y install curl ca-certificates dirmngr gnupg procps openblas nano
+
+RUN  yum -y install curl ca-certificates dirmngr gnupg procps openblas nano
 
 COPY . /root/
 
