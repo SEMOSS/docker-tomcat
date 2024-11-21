@@ -8,7 +8,8 @@ FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} AS builder
 
 LABEL maintainer="semoss@semoss.org"
 
-ENV JAVA_HOME=/usr/lib/jvm/java
+#ENV JAVA_HOME=/usr/lib/jvm/java
+ENV JAVA_HOME=/usr/lib/jvm/zulu8
 ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.97
 ENV MAVEN_HOME=/opt/apache-maven-3.8.5
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
@@ -19,7 +20,8 @@ RUN printenv | grep -E '^(JAVA_HOME|TOMCAT_HOME|MAVEN_HOME|LD_LIBRARY_PATH|PATH)
 # RUN yum -y update --exclude=poppler* \
 # 	&& yum -y install curl ca-certificates dirmngr gnupg procps openblas nano
 
-RUN  yum -y install curl ca-certificates dirmngr gnupg procps openblas nano
+RUN  yum -y install curl ca-certificates dirmngr gnupg procps openblas nano \
+	&& mkdir -p $JAVA_HOME
 
 COPY . /root/
 
@@ -65,7 +67,8 @@ RUN fips-mode-setup --enable
 
 FROM scratch AS final
 
-ENV JAVA_HOME=/usr/lib/jvm/java
+ENV JAVA_HOME=/usr/lib/jvm/zulu8
+#ENV JAVA_HOME=/usr/lib/jvm/java
 ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.97
 ENV MAVEN_HOME=/opt/apache-maven-3.8.5
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
