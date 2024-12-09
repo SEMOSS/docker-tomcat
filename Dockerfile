@@ -7,7 +7,7 @@ ARG BASE_TAG=cuda12.5
 ARG TOMCAT_HOME=/opt/apache-tomcat-9.0.85
 ARG JAVA_HOME=/usr/lib/jvm/zulu8
 ARG MAVEN_HOME=/opt/apache-maven-3.8.5
-ARG LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
+#ARG LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as builder
 
@@ -16,7 +16,7 @@ LABEL maintainer="semoss@semoss.org"
 ARG TOMCAT_HOME
 ARG JAVA_HOME
 ARG MAVEN_HOME
-ARG LD_LIBRARY_PATH
+#ARG LD_LIBRARY_PATH
 
 ENV TOMCAT_HOME=$TOMCAT_HOME
 ENV JAVA_HOME=$JAVA_HOME
@@ -60,7 +60,6 @@ RUN apt-get update \
 	&& echo 'shutdown.sh -force' >> $TOMCAT_HOME/bin/stop.sh \
 	&& chmod 777 $TOMCAT_HOME/bin/*.sh \
 	&& chmod 777 /opt/apache-maven-3.8.5/bin/*.cmd \
-	&& pip3 install jep==3.9.1 \
 	&& apt-get clean all
 
 FROM scratch AS final
@@ -68,12 +67,12 @@ FROM scratch AS final
 ARG TOMCAT_HOME
 ARG JAVA_HOME
 ARG MAVEN_HOME
-ARG LD_LIBRARY_PATH
+#ARG LD_LIBRARY_PATH
 
 ENV TOMCAT_HOME=$TOMCAT_HOME
 ENV JAVA_HOME=$JAVA_HOME
 ENV PATH=$PATH:$MAVEN_HOME/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+#ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 ENV PATH=$PATH:$MAVEN_HOME/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
 
 COPY --from=builder / /
