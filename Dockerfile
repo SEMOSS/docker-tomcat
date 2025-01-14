@@ -4,7 +4,7 @@ ARG BASE_REGISTRY=quay.io
 ARG BASE_IMAGE=semoss/docker-r-python
 ARG BASE_TAG=debian12-py
 
-ARG TOMCAT_HOME=/opt/apache-tomcat-9.0.88
+ARG TOMCAT_HOME=/opt/apache-tomcat-9.0.89
 ARG JAVA_HOME=/usr/lib/jvm/zulu8
 ARG MAVEN_HOME=/opt/apache-maven-3.8.5
 
@@ -33,7 +33,7 @@ RUN apt-get update \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
-	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.88/bin/apache-tomcat-9.0.88.tar.gz \
+	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.89/bin/apache-tomcat-9.0.89.tar.gz \
 	&& tar -zxvf apache-tomcat-9.0.*.tar.gz \
 	&& mkdir $TOMCAT_HOME \
 	&& mv apache-tomcat-9.0.*/* $TOMCAT_HOME/ \
