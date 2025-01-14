@@ -38,6 +38,7 @@ RUN apt-get update \
 	&& mkdir $TOMCAT_HOME \
 	&& mv apache-tomcat-9.0.*/* $TOMCAT_HOME/ \
 	&& rm -r apache-tomcat-9.0.*/ \
+  	%% rm -rf $TOMCAT_HOME/webapps/* \
 	&& rm apache-tomcat-9.0.*.tar.gz \
 	&& rm $TOMCAT_HOME/conf/server.xml \
 	&& rm $TOMCAT_HOME/conf/web.xml \
