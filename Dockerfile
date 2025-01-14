@@ -36,6 +36,7 @@ RUN yum -y update \
 	&& mv apache-tomcat-9.0.*/* $TOMCAT_HOME/ \
 	&& rm -r apache-tomcat-9.0.*/ \
 	&& rm apache-tomcat-9.0.*.tar.gz \
+  	%% rm -rf $TOMCAT_HOME/webapps/* \
 	&& rm $TOMCAT_HOME/conf/server.xml \
 	&& rm $TOMCAT_HOME/conf/web.xml \
 	&& cp web.xml $TOMCAT_HOME/conf/web.xml \
