@@ -176,7 +176,7 @@
 				showServerInfo="false" />
 	ERROR_REPORT_VALVE_END-->
 
-	<Context path="" docBase="semoss-ui" reloadable="true"></Context>
+	<Context path="" docBase="SemossWeb" reloadable="true"></Context>
       </Host>
     </Engine>
   </Service>
