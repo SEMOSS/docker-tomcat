@@ -70,7 +70,7 @@ FROM scratch AS final
 
 ENV JAVA_HOME=/usr/lib/jvm/zulu8
 #ENV JAVA_HOME=/usr/lib/jvm/java
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.98
+ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.102
 ENV MAVEN_HOME=/opt/apache-maven-3.8.5
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
 ENV PATH=$PATH:${MAVEN_HOME}/bin:${TOMCAT_HOME}/bin:${JAVA_HOME}/bin
