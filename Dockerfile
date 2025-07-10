@@ -1,16 +1,43 @@
+# Based on registry.access.redhat.com/ubi8/ubi:8.8
 #docker build . -t quay.io/semoss/docker-tomcat:ubi8.8
 
 ARG BASE_REGISTRY=registry.access.redhat.com
 ARG BASE_IMAGE=ubi8/ubi
 ARG BASE_TAG=8.8
 
-FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as base
+# JAVA, JDK and TOMCAT default versions
+ARG AZUL_ZULU_VERSION=21.42.19
+ARG JAVA_HOME=/usr/lib/jvm/zulu21
+ARG JDK_VERSION=21.0.7
+ARG TOMCAT_VERSION=9.0.107
+ARG MAVEN_HOME=/opt/apache-maven-3.8.5
+
+FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} AS base
 
 LABEL maintainer="semoss@semoss.org"
 
-ENV TOMCAT_HOME=/opt/apache-tomcat-9.0.102
-ENV JAVA_HOME=/usr/lib/jvm/zulu8
-ENV PATH=$PATH:/opt/apache-maven-3.8.5/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
+# Tomcat and Maven 
+ARG TOMCAT_VERSION
+ARG MAVEN_HOME
+ARG TOMCAT_HOME=/opt/apache-tomcat-${TOMCAT_VERSION}
+
+# JAVA arguments
+ARG AZUL_ZULU_VERSION
+ARG JAVA_HOME
+ARG JDK_VERSION
+
+#JAVA env values for install_java.sh
+ENV AZUL_ZULU_VERSION=${AZUL_ZULU_VERSION}
+ENV JDK_VERSION=${JDK_VERSION}
+
+ENV TOMCAT_VERSION=${TOMCAT_VERSION}
+ENV TOMCAT_HOME=${TOMCAT_HOME}
+ENV JAVA_HOME=${JAVA_HOME}
+ENV PATH=$PATH:$MAVEN_HOME/bin:$TOMCAT_HOME/bin:$JAVA_HOME/bin
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+
+# Copying install_java.sh file from the same cloned repo instead having to reclone the repository
+COPY . /root/
 
 # Install the following:
 # Java - zulu https://cdn.azul.com/zulu/bin/zulu8.56.0.21-ca-fx-jdk8.0.302-linux_x64.tar.gz 
@@ -24,14 +51,11 @@ RUN yum -y update \
 	&& cd ~/ \
 	&& mkdir -p $JAVA_HOME \
 	&& git config --global http.sslverify false \
-	&& git clone https://github.com/SEMOSS/docker-tomcat \
-	&& cd docker-tomcat \
-	&& git checkout ubi8 \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
-	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.102/bin/apache-tomcat-9.0.102.tar.gz \
-	&& tar -zxvf apache-tomcat-9.0.*.tar.gz \
+	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz \
+	&& tar -zxvf apache-tomcat-9.0.*.tar.gz \ 
 	&& mkdir $TOMCAT_HOME \
 	&& mv apache-tomcat-9.0.*/* $TOMCAT_HOME/ \
 	&& rm -r apache-tomcat-9.0.*/ \
@@ -44,7 +68,6 @@ RUN yum -y update \
 	&& chmod +x config.sh \
 	&& /bin/bash config.sh \
 	&& cd .. \
-	&& rm -r docker-tomcat \
 	&& echo 'CATALINA_PID="$CATALINA_BASE/bin/catalina.pid"' > $TOMCAT_HOME/bin/setenv.sh \
 	&& wget https://archive.apache.org/dist/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz\
 	&& tar -zxvf apache-maven-*.tar.gz \
