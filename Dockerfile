@@ -57,12 +57,12 @@ RUN apt-get update \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
-	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.102/bin/apache-tomcat-9.0.102.tar.gz \
-	&& tar -zxvf apache-tomcat-9.0.*.tar.gz \
+	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz \
+	&& tar -zxvf apache-tomcat-9.*.tar.gz \
 	&& mkdir $TOMCAT_HOME \
-	&& mv apache-tomcat-9.0.*/* $TOMCAT_HOME/ \
-	&& rm -r apache-tomcat-9.0.*/ \
-	&& rm apache-tomcat-9.0.*.tar.gz \
+	&& mv apache-tomcat-9.*/* $TOMCAT_HOME/ \
+	&& rm -r apache-tomcat-9.*/ \
+	&& rm apache-tomcat-9.*.tar.gz \
   	%% rm -rf $TOMCAT_HOME/webapps/* \
 	&& rm $TOMCAT_HOME/conf/server.xml \
 	&& rm $TOMCAT_HOME/conf/web.xml \
