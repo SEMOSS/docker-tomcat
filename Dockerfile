@@ -1,19 +1,36 @@
+# Based on quay.io/semoss/docker-r-python:debian11
 #docker build . -t quay.io/semoss/docker-tomcat:debian11-1
 
 ARG BASE_REGISTRY=quay.io
 ARG BASE_IMAGE=semoss/docker-r-python
 ARG BASE_TAG=debian11
 
-ARG TOMCAT_HOME=/opt/apache-tomcat-9.0.102
-ARG JAVA_HOME=/usr/lib/jvm/zulu8
+# JAVA, JDK and TOMCAT default versions
+ARG AZUL_ZULU_VERSION=21.42.19
+ARG JAVA_HOME=/usr/lib/jvm/zulu21
+ARG JDK_VERSION=21.0.7
+ARG TOMCAT_VERSION=9.0.107
+ARG TOMCAT_HOME=/opt/apache-tomcat-${TOMCAT_VERSION}
 ARG MAVEN_HOME=/opt/apache-maven-3.8.5
+
 ARG LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python3.9/dist-packages/jep
 
-FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as builder
+FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} AS builder
 
+# JAVA arguments
+ARG AZUL_ZULU_VERSION
 ARG JAVA_HOME
-ARG TOMCAT_HOME
+ARG JDK_VERSION
+
+#JAVA env values for install_java.sh
+ENV AZUL_ZULU_VERSION=${AZUL_ZULU_VERSION}
+ENV JDK_VERSION=${JDK_VERSION}
+
+# Tomcat and Maven 
+ARG TOMCAT_VERSION
+ARG TOMCAT_HOME=/opt/apache-tomcat-${TOMCAT_VERSION}
 ARG MAVEN_HOME
+
 ARG LD_LIBRARY_PATH
 LABEL maintainer="semoss@semoss.org"
 
@@ -36,12 +53,12 @@ RUN apt-get update \
 	&& chmod +x install_java.sh \
 	&& /bin/bash install_java.sh \
 	&& java -version \
-	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.102/bin/apache-tomcat-9.0.102.tar.gz \
-	&& tar -zxvf apache-tomcat-9.0.*.tar.gz \
+	&& wget https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz \
+	&& tar -zxvf apache-tomcat-9.*.tar.gz \
 	&& mkdir $TOMCAT_HOME \
-	&& mv apache-tomcat-9.0.*/* $TOMCAT_HOME/ \
-	&& rm -r apache-tomcat-9.0.*/ \
-	&& rm apache-tomcat-9.0.*.tar.gz \
+	&& mv apache-tomcat-9.*/* $TOMCAT_HOME/ \
+	&& rm -r apache-tomcat-9.*/ \
+	&& rm apache-tomcat-9.*.tar.gz \
   	%% rm -rf $TOMCAT_HOME/webapps/* \
 	&& rm $TOMCAT_HOME/conf/server.xml \
 	&& rm $TOMCAT_HOME/conf/web.xml \
